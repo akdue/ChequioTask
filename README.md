@@ -193,8 +193,4 @@ INSERT INTO AspNetUserRoles (UserId, RoleId) VALUES (@UserId, 'admin');
 ## 🤝 Contributing
 PRs welcome. Please open an issue first to discuss major changes.
 
----
-
-## 📄 License
-Choose a license (e.g., **MIT**) and add it as `LICENSE` in the repo root.
 
