@@ -1,0 +1,95 @@
+﻿@page
+@model LoginModel
+@{
+    ViewData["Title"] = "Sign in";
+}
+
+<section class="py-5 hero-gradient text-white rounded-3 shadow-sm mb-4">
+    <div class="container">
+        <h1 class="display-6 fw-bold mb-2">Welcome back</h1>
+        <p class="lead mb-0">Sign in to manage your cheques with ChequioTask.</p>
+    </div>
+</section>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0">Sign in</h5>
+                    <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-outline-primary btn-sm">Create account</a>
+                </div>
+
+                <div class="card-body">
+                    <!-- Validation summary as an alert -->
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger d-none" role="alert"></div>
+
+                    <!-- Login form -->
+                    <form id="account" method="post" asp-route-returnUrl="@Model.ReturnUrl" class="row g-3">
+                        @* Razor Pages adds antiforgery automatically with the form tag helper *@
+
+                        <div class="col-12">
+                            <label asp-for="Input.Email" class="form-label"></label>
+                            <input asp-for="Input.Email" class="form-control" autocomplete="username" />
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Input.Password" class="form-label"></label>
+                            <input asp-for="Input.Password" class="form-control" autocomplete="current-password" />
+                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-12 d-flex justify-content-between align-items-center">
+                            <div class="form-check">
+                                <input class="form-check-input" asp-for="Input.RememberMe" />
+                                <label class="form-check-label" asp-for="Input.RememberMe"></label>
+                            </div>
+                            <a asp-page="./ForgotPassword" class="small">Forgot password?</a>
+                        </div>
+
+                        <div class="col-12 d-grid">
+                            <button id="login-submit" type="submit" class="btn btn-primary btn-lg">Sign in</button>
+                        </div>
+                    </form>
+
+                    <!-- External providers (if any are configured) -->
+                    @if ((Model.ExternalLogins?.Count ?? 0) > 0)
+                    {
+                        <hr class="my-4" />
+                        <div class="text-center text-muted small mb-2">Or sign in with</div>
+                        <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                            <div class="d-flex flex-wrap gap-2 justify-content-center">
+                                @foreach (var provider in Model.ExternalLogins!)
+                                {
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm"
+                                            name="provider" value="@provider.Name"
+                                            title="Sign in using your @provider.DisplayName account">
+                                        @provider.DisplayName
+                                    </button>
+                                }
+                            </div>
+                        </form>
+                    }
+                </div>
+
+                <div class="card-footer text-muted small">
+                    Need an account? <a asp-area="Identity" asp-page="/Account/Register">Register</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Show validation summary only when there are errors
+        (function () {
+            var summary = document.querySelector('[asp-validation-summary]');
+            if (summary && summary.innerText.trim().length > 0) {
+                summary.classList.remove('d-none');
+            }
+        })();
+    </script>
+}

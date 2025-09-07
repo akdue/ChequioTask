@@ -1,0 +1,153 @@
+﻿/* ===== Page Setup (more compact) ===== */
+@page {
+    /* A5 landscape fits most cheques nicely */
+    size: A5 landscape;
+    /* Reduced margins to avoid 2 pages */
+    margin: 6mm;
+}
+
+/* Base */
+html, body {
+    background: #fff;
+    color: #000;
+    /* Slightly smaller to fit more on one page */
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.25;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+/* Hide toolbar in print */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* ===== Layout ===== */
+.cheque-sheet {
+    /* Tighter inner padding to save space */
+    padding: 6mm;
+    /* Optional thin border; remove if you want even more space */
+    border: 0.3mm solid #ddd;
+    box-sizing: border-box;
+    /* Avoid breaking the sheet across pages */
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+/* Header */
+.sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 4mm; /* tightened */
+}
+
+.brand {
+    font-weight: 700;
+    font-size: 14pt; /* slightly smaller */
+    letter-spacing: .3px;
+}
+
+.meta {
+    text-align: right;
+    font-size: 10pt;
+    line-height: 1.2;
+}
+
+/* Body rows */
+.sheet-body .row {
+    display: grid;
+    /* Narrower label column, more space for values */
+    grid-template-columns: 26mm 1fr;
+    gap: 4mm; /* tightened */
+    align-items: center;
+    margin-bottom: 3.5mm; /* tightened */
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+    .sheet-body .row.two-col {
+        grid-template-columns: 1fr 1fr;
+        column-gap: 6mm;
+    }
+
+.sheet-body .label {
+    font-weight: 600;
+    font-size: 10.5pt;
+}
+
+.sheet-body .value {
+    border-bottom: 1px dashed #666;
+    padding-bottom: 1.5mm;
+    min-height: 10pt;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+}
+
+    .sheet-body .value.amount {
+        font-size: 13pt;
+        font-weight: 700;
+    }
+
+    .sheet-body .value.notes {
+        min-height: 14pt;
+    }
+
+/* Footer (signature) */
+.sheet-footer {
+    display: grid;
+    grid-template-columns: 22mm 1fr;
+    gap: 5mm;
+    align-items: center;
+    margin-top: 8mm; /* tightened */
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+    .sheet-footer .line {
+        border-bottom: 0.3mm solid #333;
+        height: 0;
+    }
+
+/* Toolbar (screen preview only) */
+.print-toolbar {
+    padding: 8px 10px;
+    background: #f7f7f7;
+    border-bottom: 1px solid #ddd;
+}
+
+    .print-toolbar button,
+    .print-toolbar a {
+        padding: 6px 10px;
+        margin-right: 6px;
+        border: 1px solid #bbb;
+        background: #fff;
+        cursor: pointer;
+        text-decoration: none;
+        color: #333;
+    }
+
+        .print-toolbar button:hover,
+        .print-toolbar a:hover {
+            background: #f0f0f0;
+        }
+
+/* ===== Compact mode (extra tight if needed) ===== */
+body.compact {
+    font-size: 10.5pt;
+}
+
+    body.compact .sheet-header {
+        margin-bottom: 3.5mm;
+    }
+
+    body.compact .sheet-body .row {
+        margin-bottom: 3mm;
+    }
+
+    body.compact .sheet-footer {
+        margin-top: 7mm;
+    }

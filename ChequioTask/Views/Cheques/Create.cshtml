@@ -1,0 +1,105 @@
+﻿@model ChequioTask.Models.Cheque
+@{
+    ViewData["Title"] = "Create Cheque";
+}
+
+<div class="card shadow-sm">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <h5 class="mb-0">Create Cheque</h5>
+        <div class="btn-group">
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Back</a>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <!-- Validation summary as a styled alert -->
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger d-none" role="alert"></div>
+
+        <!-- Bootstrap grid layout for a compact, readable form -->
+        <form asp-action="Create" method="post" class="row g-3">
+            <!-- Cheque Number -->
+            <div class="col-md-6">
+                <label asp-for="Number" class="form-label"></label>
+                <input asp-for="Number" class="form-control" autocomplete="off" />
+                <span asp-validation-for="Number" class="text-danger"></span>
+            </div>
+
+            <!-- Payee Name -->
+            <div class="col-md-6">
+                <label asp-for="PayeeName" class="form-label"></label>
+                <input asp-for="PayeeName" class="form-control" />
+                <span asp-validation-for="PayeeName" class="text-danger"></span>
+            </div>
+
+            <!-- Amount + Currency (input group) -->
+            <div class="col-md-6">
+                <label class="form-label">Amount &amp; Currency</label>
+                <div class="input-group">
+                    <input asp-for="Amount" class="form-control" type="number" step="0.01" min="0.01" />
+                    <select asp-for="Currency" class="form-select" style="max-width: 120px;">
+                        <option value="JOD">JOD</option>
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="SAR">SAR</option>
+                        <option value="AED">AED</option>
+                        <option value="EGP">EGP</option>
+                    </select>
+                </div>
+                <span asp-validation-for="Amount" class="text-danger"></span>
+                <span asp-validation-for="Currency" class="text-danger"></span>
+            </div>
+
+            <!-- Dates -->
+            <div class="col-md-3">
+                <label asp-for="IssueDate" class="form-label"></label>
+                <input asp-for="IssueDate" class="form-control" type="date" />
+                <span asp-validation-for="IssueDate" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-3">
+                <label asp-for="DueDate" class="form-label"></label>
+                <input asp-for="DueDate" class="form-control" type="date" />
+                <span asp-validation-for="DueDate" class="text-danger"></span>
+            </div>
+
+            <!-- Status (enum dropdown) -->
+            <div class="col-md-6">
+                <label asp-for="Status" class="form-label"></label>
+                <select asp-for="Status"
+                        class="form-select"
+                        asp-items="Html.GetEnumSelectList<ChequioTask.Models.ChequeStatus>()">
+                </select>
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+
+            <!-- Notes -->
+            <div class="col-12">
+                <label asp-for="Notes" class="form-label"></label>
+                <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Notes" class="text-danger"></span>
+            </div>
+
+            <!-- Actions -->
+            <div class="col-12 d-flex justify-content-end gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Client-side validation scripts -->
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Show validation summary only when there are errors
+        (function () {
+            var summary = document.querySelector('[asp-validation-summary]');
+            if (summary && summary.innerText.trim().length > 0) {
+                summary.classList.remove('d-none');
+            }
+        })();
+    </script>
+}

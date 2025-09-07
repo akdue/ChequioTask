@@ -1,0 +1,121 @@
+﻿@* Views/Home/About.cshtml *@
+@using Microsoft.AspNetCore.Identity
+@{
+    ViewData["Title"] = "About";
+    bool isAuthenticated = User?.Identity?.IsAuthenticated ?? false;
+    bool isAdmin = User.IsInRole("Admin");
+}
+
+<section class="py-5 hero-gradient text-white rounded-3 shadow-sm mb-4">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-8">
+                <h1 class="display-6 fw-bold mb-3">About ChequioTask</h1>
+                <p class="lead mb-4">
+                    ChequioTask is a lightweight cheque management app built on ASP.NET Core MVC with Identity and SQL Server.
+                    It focuses on simple, fast, and secure workflows to create, track, and manage cheques.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    @if (!isAuthenticated)
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-light btn-lg fw-semibold">Create account</a>
+                        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-light btn-lg">Sign in</a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Cheques" asp-action="Index" class="btn btn-light btn-lg fw-semibold">Open Cheques</a>
+                        @if (isAdmin)
+                        {
+                            <a asp-controller="Cheques" asp-action="Create" class="btn btn-outline-light btn-lg">New Cheque</a>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-lg">
+                    <div class="card-header bg-white">
+                        <div class="fw-semibold">Quick Facts</div>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0 small">
+                            <li class="mb-2">✅ Role-based access (Admin/User)</li>
+                            <li class="mb-2">✅ CRUD for cheques</li>
+                            <li class="mb-2">✅ EF Core + SQL Server</li>
+                            <li class="mb-2">✅ Bootswatch Flatly UI</li>
+                            <li class="mb-2">✅ Server-side UTC timestamps</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="small text-muted mt-2">* Built with .NET 9</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="fs-5 mb-2">🎯 Purpose</div>
+                    <p class="text-muted mb-0">
+                        Provide a clean and reliable way to manage cheques—covering creation, status tracking, and secure access
+                        for team members based on their roles.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="fs-5 mb-2">🧩 Features</div>
+                    <ul class="text-muted mb-0">
+                        <li>Create, edit, delete cheques (Admin)</li>
+                        <li>View cheques (User/Admin)</li>
+                        <li>Status lifecycle (Draft → Issued → Cleared/Bounced/Voided)</li>
+                        <li>Friendly UI with Flatly theme</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="fs-5 mb-2">🛠 Tech Stack</div>
+                    <ul class="text-muted mb-0">
+                        <li>ASP.NET Core MVC (.NET 9)</li>
+                        <li>Identity + Roles</li>
+                        <li>EF Core + SQL Server</li>
+                        <li>Bootswatch Flatly</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-body">
+            <div class="row g-3 align-items-center">
+                <div class="col-lg-9">
+                    <div class="fw-semibold mb-1">Ready to get started?</div>
+                    <div class="text-muted">Sign up to begin creating and tracking cheques, or sign in to continue where you left off.</div>
+                </div>
+                <div class="col-lg-3 text-lg-end">
+                    @if (!isAuthenticated)
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary me-2">Create account</a>
+                        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-primary">Sign in</a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Cheques" asp-action="Index" class="btn btn-primary me-2">Open Cheques</a>
+                        @if (isAdmin)
+                        {
+                            <a asp-controller="Cheques" asp-action="Create" class="btn btn-outline-primary">New Cheque</a>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

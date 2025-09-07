@@ -1,0 +1,124 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Create account";
+}
+
+<section class="py-5 hero-gradient text-white rounded-3 shadow-sm mb-4">
+    <div class="container">
+        <h1 class="display-6 fw-bold mb-2">Create your account</h1>
+        <p class="lead mb-0">Join ChequioTask to create and track cheques securely.</p>
+    </div>
+</section>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-xl-5">
+            <div class="card shadow-sm">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0">Sign up</h5>
+                    <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-primary btn-sm">Sign in</a>
+                </div>
+
+                <div class="card-body">
+                    <!-- Validation summary as an alert -->
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger d-none" role="alert"></div>
+
+                    <!-- Registration form -->
+                    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="row g-3">
+                        @* Antiforgery is emitted automatically with the form tag helper *@
+
+                        <!-- Email -->
+                        <div class="col-12">
+                            <label asp-for="Input.Email" class="form-label"></label>
+                            <input asp-for="Input.Email" class="form-control" autocomplete="username" />
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="col-12">
+                            <label asp-for="Input.Password" class="form-label"></label>
+                            <div class="input-group">
+                                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" id="pwd" />
+                                <button type="button" class="btn btn-outline-secondary" id="togglePwd">Show</button>
+                            </div>
+                            <div class="form-text">
+                                Use at least 8 characters, with a mix of upper/lowercase, a number, and a symbol.
+                            </div>
+                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="col-12">
+                            <label asp-for="Input.ConfirmPassword" class="form-label"></label>
+                            <div class="input-group">
+                                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" id="pwd2" />
+                                <button type="button" class="btn btn-outline-secondary" id="togglePwd2">Show</button>
+                            </div>
+                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-12 d-grid">
+                            <button id="registerSubmit" type="submit" class="btn btn-primary btn-lg">Create account</button>
+                        </div>
+                    </form>
+
+                    <!-- External providers (if configured) -->
+                    @if ((Model.ExternalLogins?.Count ?? 0) > 0)
+                    {
+                        <hr class="my-4" />
+                        <div class="text-center text-muted small mb-2">Or sign up with</div>
+                        <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                            <div class="d-flex flex-wrap gap-2 justify-content-center">
+                                @foreach (var provider in Model.ExternalLogins!)
+                                {
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm"
+                                            name="provider" value="@provider.Name"
+                                            title="Sign in using your @provider.DisplayName account">
+                                        @provider.DisplayName
+                                    </button>
+                                }
+                            </div>
+                        </form>
+                    }
+                </div>
+
+                <div class="card-footer text-muted small">
+                    Already have an account? <a asp-area="Identity" asp-page="/Account/Login">Sign in</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Show validation summary only when there are errors
+        (function () {
+            var summary = document.querySelector('[asp-validation-summary]');
+            if (summary && summary.innerText.trim().length > 0) {
+                summary.classList.remove('d-none');
+            }
+        })();
+
+        // Simple password visibility toggles
+        (function () {
+            const t1 = document.getElementById('togglePwd');
+            const p1 = document.getElementById('pwd');
+            const t2 = document.getElementById('togglePwd2');
+            const p2 = document.getElementById('pwd2');
+
+            function toggle(btn, input) {
+                if (!btn || !input) return;
+                btn.addEventListener('click', () => {
+                    const isPwd = input.getAttribute('type') === 'password';
+                    input.setAttribute('type', isPwd ? 'text' : 'password');
+                    btn.textContent = isPwd ? 'Hide' : 'Show';
+                });
+            }
+            toggle(t1, p1);
+            toggle(t2, p2);
+        })();
+    </script>
+}

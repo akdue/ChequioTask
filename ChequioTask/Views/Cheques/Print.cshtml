@@ -1,0 +1,72 @@
+﻿@model ChequioTask.Models.Cheque
+@{
+    Layout = null; // standalone print view
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Print Cheque #@Model.Number</title>
+    <link rel="stylesheet" href="~/css/print-cheque.css" />
+</head>
+<body class="compact">
+    <!-- Toolbar (hidden on print) -->
+    <div class="print-toolbar no-print">
+        <button onclick="window.print()">Print</button>
+        <a href="javascript:window.close()">Close</a>
+    </div>
+
+    <section class="cheque-sheet">
+        <header class="sheet-header">
+            <div class="brand">ChequioTask</div>
+            <div class="meta">
+                <div><strong>No:</strong> @Model.Number</div>
+                <div><strong>Created (UTC):</strong> @Model.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm")</div>
+            </div>
+        </header>
+
+        <main class="sheet-body">
+            <div class="row">
+                <div class="label">Payee</div>
+                <div class="value">@Model.PayeeName</div>
+            </div>
+            <div class="row">
+                <div class="label">Amount</div>
+                <div class="value amount">@Model.Amount.ToString("N2") @Model.Currency</div>
+            </div>
+
+            <div class="row two-col">
+                <div>
+                    <div class="label">Issue Date</div>
+                    <div class="value">@Model.IssueDate.ToString("yyyy-MM-dd")</div>
+                </div>
+                <div>
+                    <div class="label">Due Date</div>
+                    <div class="value">@Model.DueDate.ToString("yyyy-MM-dd")</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="label">Status</div>
+                <div class="value">@Model.Status</div>
+            </div>
+
+            <div class="row">
+                <div class="label">Notes</div>
+                <div class="value notes">@(string.IsNullOrWhiteSpace(Model.Notes) ? "-" : Model.Notes)</div>
+            </div>
+        </main>
+
+        <footer class="sheet-footer">
+            <div>Signature</div>
+            <div class="line"></div>
+        </footer>
+    </section>
+
+    <script>
+        // Auto-print on load (comment out if you prefer manual)
+        window.addEventListener('load', () => window.print());
+    </script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+﻿@model ChequioTask.Models.Cheque
+
+@{
+    ViewData["Title"] = "Edit Cheque";
+}
+
+<div class="card shadow-sm">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <h5 class="mb-0">Edit Cheque</h5>
+        <div class="btn-group">
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Back</a>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <!-- Validation summary styled as alert -->
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger d-none" role="alert"></div>
+
+        <form asp-action="Edit" method="post" class="row g-3">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+
+            <!-- Cheque Number -->
+            <div class="col-md-6">
+                <label asp-for="Number" class="form-label"></label>
+                <input asp-for="Number" class="form-control" autocomplete="off" />
+                <span asp-validation-for="Number" class="text-danger"></span>
+            </div>
+
+            <!-- Payee Name -->
+            <div class="col-md-6">
+                <label asp-for="PayeeName" class="form-label"></label>
+                <input asp-for="PayeeName" class="form-control" />
+                <span asp-validation-for="PayeeName" class="text-danger"></span>
+            </div>
+
+            <!-- Amount + Currency (input group) -->
+            <div class="col-md-6">
+                <label class="form-label">Amount &amp; Currency</label>
+                <div class="input-group">
+                    <input asp-for="Amount" class="form-control" type="number" step="0.01" min="0.01" />
+                    <select asp-for="Currency" class="form-select" style="max-width: 140px;">
+                        @{
+                            // Ensure current currency remains selected even if not in the common list
+                            var common = new[] { "JOD", "USD", "EUR", "SAR", "AED", "EGP" };
+                            bool inList = Model?.Currency != null && common.Contains(Model.Currency, StringComparer.OrdinalIgnoreCase);
+                        }
+                        @if (!inList && !string.IsNullOrWhiteSpace(Model?.Currency))
+                        {
+                            <option selected value="@Model!.Currency">@Model.Currency</option>
+                            <option disabled>──────────</option>
+                        }
+                        <option value="JOD">JOD</option>
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="SAR">SAR</option>
+                        <option value="AED">AED</option>
+                        <option value="EGP">EGP</option>
+                    </select>
+                </div>
+                <span asp-validation-for="Amount" class="text-danger"></span>
+                <span asp-validation-for="Currency" class="text-danger"></span>
+            </div>
+
+            <!-- Dates -->
+            <div class="col-md-3">
+                <label asp-for="IssueDate" class="form-label"></label>
+                <input asp-for="IssueDate" class="form-control" type="date" />
+                <span asp-validation-for="IssueDate" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-3">
+                <label asp-for="DueDate" class="form-label"></label>
+                <input asp-for="DueDate" class="form-control" type="date" />
+                <span asp-validation-for="DueDate" class="text-danger"></span>
+            </div>
+
+            <!-- Status (enum dropdown) -->
+            <div class="col-md-6">
+                <label asp-for="Status" class="form-label"></label>
+                <select asp-for="Status"
+                        class="form-select"
+                        asp-items="Html.GetEnumSelectList<ChequioTask.Models.ChequeStatus>()">
+                </select>
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+
+            <!-- Notes -->
+            <div class="col-12">
+                <label asp-for="Notes" class="form-label"></label>
+                <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Notes" class="text-danger"></span>
+            </div>
+
+            <!-- Actions -->
+            <div class="col-12 d-flex justify-content-end gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Show the alert only if there are model errors
+        (function () {
+            var summary = document.querySelector('[asp-validation-summary]');
+            if (summary && summary.innerText.trim().length > 0) {
+                summary.classList.remove('d-none');
+            }
+        })();
+    </script>
+}

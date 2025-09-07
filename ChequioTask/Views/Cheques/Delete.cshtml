@@ -1,0 +1,75 @@
+﻿@model ChequioTask.Models.Cheque
+@using ChequioTask.Models
+
+@{
+    ViewData["Title"] = "Delete Cheque";
+
+    // Map enum to Bootswatch/Bootstrap badge classes
+    string BadgeClass(ChequeStatus s) => s switch
+    {
+        ChequeStatus.Draft => "bg-secondary",
+        ChequeStatus.Issued => "bg-primary",
+        ChequeStatus.Cleared => "bg-success",
+        ChequeStatus.Bounced => "bg-warning text-dark",
+        ChequeStatus.Voided => "bg-dark",
+        _ => "bg-secondary"
+    };
+}
+
+<div class="card shadow-sm border-danger">
+    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Delete Cheque</h5>
+        <span class="badge bg-light text-danger">@Model.Number</span>
+    </div>
+
+    <div class="card-body">
+        <!-- Clear destructive action notice -->
+        <div class="alert alert-danger" role="alert">
+            <strong>Warning:</strong> This will permanently delete the cheque. This action cannot be undone.
+        </div>
+
+        <!-- Compact field layout -->
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="small text-muted">Payee</div>
+                <div class="fw-medium">@Model.PayeeName</div>
+            </div>
+            <div class="col-md-6">
+                <div class="small text-muted">Amount</div>
+                <div class="fw-medium">@Model.Amount.ToString("N2") @Model.Currency</div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="small text-muted">Issue Date</div>
+                <div class="fw-medium">@Model.IssueDate.ToString("yyyy-MM-dd")</div>
+            </div>
+            <div class="col-md-6">
+                <div class="small text-muted">Due Date</div>
+                <div class="fw-medium">@Model.DueDate.ToString("yyyy-MM-dd")</div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="small text-muted">Status</div>
+                <span class="badge @BadgeClass(Model.Status)">@Model.Status</span>
+            </div>
+
+            <div class="col-12">
+                <div class="small text-muted">Notes</div>
+                <div class="fw-medium">@(!string.IsNullOrWhiteSpace(Model.Notes) ? Model.Notes : "-")</div>
+            </div>
+
+            <div class="col-12">
+                <div class="small text-muted">Created At (UTC)</div>
+                <div class="fw-medium">@Model.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm:ss")</div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <form asp-action="Delete" method="post" class="mt-4 d-flex justify-content-end gap-2">
+            @Html.AntiForgeryToken() <!-- Keep antiforgery token since POST action has [ValidateAntiForgeryToken] -->
+            <input type="hidden" asp-for="Id" />
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+    </div>
+</div>

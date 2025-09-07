@@ -1,0 +1,154 @@
+﻿@model IEnumerable<ChequioTask.Models.Cheque>
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using ChequioTask.Models
+
+@{
+    ViewData["Title"] = "Cheques";
+    bool isAdmin = User.IsInRole("Admin");
+
+    // Badge style per status
+    string BadgeClass(ChequeStatus s) => s switch
+    {
+        ChequeStatus.Draft => "badge bg-secondary",
+        ChequeStatus.Issued => "badge bg-primary",
+        ChequeStatus.Cleared => "badge bg-success",
+        ChequeStatus.Bounced => "badge bg-warning text-dark",
+        ChequeStatus.Voided => "badge bg-dark",
+        _ => "badge bg-secondary"
+    };
+
+    // Overdue helper
+    bool IsOverdue(Cheque c) =>
+        c.DueDate.Date < DateTime.Today &&
+        c.Status is not ChequeStatus.Cleared and not ChequeStatus.Voided;
+
+    // ✅ Use ViewContext.HttpContext.Request (null-safe)
+    var httpReq = ViewContext?.HttpContext?.Request;
+    string currentQ = httpReq?.Query["q"].ToString() ?? string.Empty;
+    string currentFrom = httpReq?.Query["from"].ToString() ?? string.Empty;
+    string currentTo = httpReq?.Query["to"].ToString() ?? string.Empty;
+
+    // ✅ Safe status list fallback
+    var statusList = ViewBag.StatusList as SelectList
+        ?? new SelectList(
+            Enum.GetValues<ChequeStatus>()
+                .Cast<ChequeStatus>()
+                .Select(s => new { Id = (int)s, Name = s.ToString() }),
+            "Id", "Name");
+}
+
+<div class="card shadow-sm">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <h5 class="mb-0">Cheques</h5>
+        @if (isAdmin)
+        {
+            <a asp-action="Create" class="btn btn-primary btn-sm">Create New</a>
+        }
+    </div>
+
+    <div class="card-body p-0">
+        <div class="p-3 border-bottom">
+            <form method="get" class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">Search</label>
+                    <input type="text" name="q" value="@currentQ" class="form-control" placeholder="Number or Payee..." />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select" asp-items="statusList">
+                        <option value="">All statuses</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">From (Issue)</label>
+                    <input type="date" name="from" value="@currentFrom" class="form-control" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">To (Due)</label>
+                    <input type="date" name="to" value="@currentTo" class="form-control" />
+                </div>
+                <div class="col-md-1 d-grid">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+                <div class="col-md-12 mt-2">
+                    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">Clear</a>
+                    @if (isAdmin)
+                    {
+                        <a asp-action="Create" class="btn btn-sm btn-success ms-1">New</a>
+                    }
+                </div>
+            </form>
+        </div>
+
+        @if (Model is null || !Model.Any())
+        {
+            <div class="p-4">
+                <div class="alert alert-info mb-0">
+                    No cheques found.
+                    @if (isAdmin)
+                    {
+                        <a asp-action="Create" class="alert-link ms-1">Create one</a>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Number</th>
+                            <th>Payee</th>
+                            <th class="text-end">Amount</th>
+                            <th>Currency</th>
+                            <th>Issue</th>
+                            <th>Due</th>
+                            <th>Status</th>
+                            <th>Created (UTC)</th>
+                            <th style="width: 190px;" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-medium">@item.Number</td>
+                                <td>@item.PayeeName</td>
+                                <td class="text-end">@item.Amount.ToString("N2")</td>
+                                <td>@item.Currency</td>
+                                <td>@item.IssueDate.ToString("yyyy-MM-dd")</td>
+                                <td>
+                                    @item.DueDate.ToString("yyyy-MM-dd")
+                                    @if (IsOverdue(item))
+                                    {
+                                        <span class="badge bg-danger ms-1">Overdue</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="@BadgeClass(item.Status)">@item.Status</span>
+                                </td>
+                                <td>@item.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td class="text-end">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        @if (isAdmin)
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary">Edit</a>
+                                        }
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-secondary">Details</a>
+                                        @if (isAdmin)
+                                        {
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+
+                                        }
+                                            <a asp-action="Print" asp-route-id="@item.Id" target="_blank" class="btn btn-primary">Print</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

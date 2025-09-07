@@ -1,0 +1,13 @@
+{
+  "version": "3.0",
+  "defaultProvider": "jsdelivr",
+  "libraries": [
+    {
+      "library": "bootswatch@5.3.3",
+      "destination": "wwwroot/bootswatch/",
+      "files": [
+        "dist/flatly/bootstrap.min.css"
+      ]
+    }
+  ]
+}
